@@ -52,6 +52,7 @@ mkdir -p /app/storage/framework/cache/data
 mkdir -p /app/storage/app/public
 mkdir -p /app/storage/logs
 mkdir -p /app/storage/debugbar
+mkdir -p /app/storage/img
 
 fix-permissions /app/storage/framework
 fix-permissions /app/storage/app

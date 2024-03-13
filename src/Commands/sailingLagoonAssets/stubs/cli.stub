@@ -3,7 +3,7 @@
     build:
       context: .
       dockerfile: lagoon/cli.dockerfile
-    image: &cli-image huntradar-filament-poc-cli
+    image: &cli-image sailonlagoon
     labels:
       lagoon.type: cli-persistent
       lagoon.persistent.name: nginx
