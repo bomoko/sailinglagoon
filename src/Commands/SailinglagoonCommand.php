@@ -128,8 +128,22 @@ class SailinglagoonCommand extends Command
 
         file_put_contents(join_paths(base_path(), $this->dockerComposeName), Yaml::dump($dockerComposeFile,5));
         $this->info(sprintf("Successfully created %s", $this->dockerComposeName));
-        // now let's copy the files we require to build everything to .lagoon
 
+        // Let's now do the same for env stubs
+
+        $stubsRootPath = join_paths(__DIR__, "sailingLagoonAssets/envstubs");
+        $stubContents = "";
+        foreach ($services as $serviceName) {
+            $stubPath = join_paths($stubsRootPath, $serviceName.".stub");
+            if(file_exists($stubPath)) {
+                $stubContents .= sprintf("\n## %s\n\n%s\n", $serviceName, file_get_contents($stubPath));
+            }
+        }
+        if(!empty($stubContents)) {
+            file_put_contents(join_paths(base_path(), ".lagoon.env"), $stubContents);
+        }
+
+        // now let's copy the files we require to build everything to .lagoon
         $copySource = join_paths(__DIR__, "sailingLagoonAssets", "Lagoon");
         $copyDest = join_paths(base_path(), "lagoon");
 
