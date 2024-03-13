@@ -51,7 +51,7 @@ class SailinglagoonCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:sailinglagoon {--projectName=}';
+    protected $signature = 'sail:onlagoon {--projectName=}';
 
     /**
      * The console command description.
