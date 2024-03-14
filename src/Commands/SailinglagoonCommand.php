@@ -97,19 +97,13 @@ class SailinglagoonCommand extends Command
         //Let's build the service list and then parse
         $stubsRootPath = join_paths(__DIR__, "sailingLagoonAssets/stubs");
         $yamlFile = file_get_contents(join_paths($stubsRootPath, "docker-compose.stub"));
-        foreach ($services as $serviceName) {
-            $stubPath = join_paths($stubsRootPath, $serviceName.".stub");
-            if(file_exists($stubPath)) {
-                $yamlFile .= file_get_contents($stubPath);
-            }
+
+        $dockerComposeFile = $this->generateDockerCompose($services, $stubsRootPath, $yamlFile);
+
+        if(!file_put_contents(join_paths(base_path(), $this->dockerComposeName), Yaml::dump($dockerComposeFile,5))) {
+            throw new \Exception("Unable to write docker-compose file");
         }
 
-        $dockerComposeFile = Yaml::parse($yamlFile);
-        // now we go through the services and remove any depends on that doesn't appear in our total service list
-        $serviceList = $dockerComposeFile["services"];
-        $dockerComposeFile["services"] = self::removeUnusedServiceDependencies($serviceList, $services);
-
-        file_put_contents(join_paths(base_path(), $this->dockerComposeName), Yaml::dump($dockerComposeFile,5));
         $this->info(sprintf("Successfully created %s", $this->dockerComposeName));
 
         // Let's now do the same for env stubs
@@ -171,6 +165,28 @@ class SailinglagoonCommand extends Command
             }
         }
         return $services;
+    }
+
+    /**
+     * @param Collection $services
+     * @param string $stubsRootPath
+     * @param string $yamlFile
+     * @param mixed $dockerComposeFile
+     * @return array
+     */
+    public function generateDockerCompose(Collection $services, string $stubsRootPath, string $yamlFile): mixed
+    {
+        foreach ($services as $serviceName) {
+            $stubPath = join_paths($stubsRootPath, $serviceName . ".stub");
+            if (file_exists($stubPath)) {
+                $yamlFile .= file_get_contents($stubPath);
+            }
+        }
+        $dockerComposeFile = Yaml::parse($yamlFile);
+        // now we go through the services and remove any depends on that doesn't appear in our total service list
+        $serviceList = $dockerComposeFile["services"];
+        $dockerComposeFile["services"] = self::removeUnusedServiceDependencies($serviceList, $services);
+        return $dockerComposeFile;
     }
 
 }
