@@ -3,6 +3,7 @@
 namespace Uselagoon\Sailinglagoon\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Symfony\Component\Yaml\Yaml;
 use Illuminate\Support\Facades\File;
 
@@ -93,9 +94,6 @@ class SailinglagoonCommand extends Command
             }
         }
 
-
-
-
         //Let's build the service list and then parse
         $stubsRootPath = join_paths(__DIR__, "sailingLagoonAssets/stubs");
         $yamlFile = file_get_contents(join_paths($stubsRootPath, "docker-compose.stub"));
@@ -108,23 +106,8 @@ class SailinglagoonCommand extends Command
 
         $dockerComposeFile = Yaml::parse($yamlFile);
         // now we go through the services and remove any depends on that doesn't appear in our total service list
-        // TODO: this could probably be achieved a little more elegantly. Look into it please.
-
-        foreach ($dockerComposeFile["services"] as $serviceName => &$service) {
-            if(key_exists("depends_on", $service)) {
-                $dependsOnNew = [];
-                for($i = 0; $i < count($service["depends_on"]); $i++) {
-                    if(in_array($service["depends_on"][$i], $services->toArray())) {
-                       $dependsOnNew[] =  $service["depends_on"][$i];
-                    }
-                }
-                if(count($dependsOnNew) > 0) {
-                    $service["depends_on"] = $dependsOnNew;
-                } else {
-                    unset($service["depends_on"]);
-                }
-            }
-        }
+        $serviceList = $dockerComposeFile["services"];
+        $dockerComposeFile["services"] = self::removeUnusedServiceDependencies($serviceList, $services);
 
         file_put_contents(join_paths(base_path(), $this->dockerComposeName), Yaml::dump($dockerComposeFile,5));
         $this->info(sprintf("Successfully created %s", $this->dockerComposeName));
@@ -159,9 +142,35 @@ class SailinglagoonCommand extends Command
 
         $lagoonYml = str_replace(array_keys($replacements), $replacements, $lagoonYml);
 
+
         file_put_contents(join_paths(base_path(), ".lagoon.yml"), $lagoonYml);
 
         return true;
+    }
+
+    /**
+     * @param $services
+     * @param Collection $existentServices
+     * @return array
+     */
+    public function removeUnusedServiceDependencies($services, Collection $existentServices): array
+    {
+        foreach ($services as $serviceName => &$service) {
+            if (key_exists("depends_on", $service)) {
+                $dependsOnNew = [];
+                for ($i = 0; $i < count($service["depends_on"]); $i++) {
+                    if (in_array($service["depends_on"][$i], $existentServices->toArray())) {
+                        $dependsOnNew[] = $service["depends_on"][$i];
+                    }
+                }
+                if (count($dependsOnNew) > 0) {
+                    $service["depends_on"] = $dependsOnNew;
+                } else {
+                    unset($service["depends_on"]);
+                }
+            }
+        }
+        return $services;
     }
 
 }
