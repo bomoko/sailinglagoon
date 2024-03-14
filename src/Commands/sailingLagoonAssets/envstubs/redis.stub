@@ -1,0 +1,4 @@
+# if defined you should already have the env vars:
+# REDIS_HOST
+# REDIS_PASSWORD
+# REDIS_PORT
