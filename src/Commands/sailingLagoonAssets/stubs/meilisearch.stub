@@ -1,0 +1,6 @@
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    labels:
+      lagoon.type: basic-persistent
+      lagoon.persistent: /meili_data
+
