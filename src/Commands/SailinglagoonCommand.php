@@ -31,11 +31,12 @@ class SailinglagoonCommand extends Command
 
     /** @var string[] $unsupportedServices for development, we'll focus on the service we most use */
     protected $unsupportedServices = [
-        'typesense',
-        'minio',
-        'mailpit',
-        'selenium',
-        'soketi',
+        'typesense' => '',
+        'minio' => '',
+        'mailpit' => '',
+        'selenium' => '',
+        'soketi' => '',
+        'memcached' => 'On Lagoon we encourage the adoption of Redis as a caching backend',
     ];
 
     /** @var string[] $defaultServices keeps track of services in lagoon that should always exist for Laravel installations */
@@ -83,9 +84,12 @@ class SailinglagoonCommand extends Command
         $services = collect(array_keys($parsedCompose['services']))->merge($this->defaultServices);
 
         // Here we ensure that none of the incoming services aren't on our unsupported list
-        $disallowedServices = array_intersect(array_keys($parsedCompose['services']), $this->unsupportedServices);
+        $disallowedServices = array_intersect(array_keys($parsedCompose['services']), array_keys($this->unsupportedServices));
         if(count($disallowedServices) > 0) {
-            $this->error("The following unsupported services have been detected - " . implode(",", $disallowedServices));
+            $this->info("The following unsupported services have been detected:");
+            foreach ($disallowedServices as $key) {
+                $this->info(sprintf("* %s: %s", $key, $this->unsupportedServices[$key]));
+            }
             if(!$this->confirm("Continue Lagoonizing while ignoring these services?", true)) {
                 $this->error("Will not continue");
                 return 1;
