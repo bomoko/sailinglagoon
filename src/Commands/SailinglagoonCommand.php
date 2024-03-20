@@ -31,7 +31,6 @@ class SailinglagoonCommand extends Command
 
     /** @var string[] $unsupportedServices for development, we'll focus on the service we most use */
     protected $unsupportedServices = [
-        'memcached',
         'typesense',
         'minio',
         'mailpit',
