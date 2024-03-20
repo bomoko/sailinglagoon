@@ -3,4 +3,5 @@
     labels:
       lagoon.type: basic-persistent
       lagoon.persistent: /meili_data
+      lagoon.service.port: 7700
 

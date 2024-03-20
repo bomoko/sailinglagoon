@@ -12,4 +12,5 @@
           - redis
           - mariadb
           - worker
+          - meilisearch
 
