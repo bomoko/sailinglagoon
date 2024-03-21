@@ -5,56 +5,39 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/bomoko/sailinglagoon/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/bomoko/sailinglagoon/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/bomoko/sailinglagoon.svg?style=flat-square)](https://packagist.org/packages/bomoko/sailinglagoon)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/sailinglagoon.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/sailinglagoon)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+Sail on Lagoon is a Laravel extension that simplifies the process of Lagoonizing Laravel sites 
+that are already using Laravel Sail to generate their docker-compose setup.
+This extension provides additional features and configurations tailored for Lagoon environments.
 
 ## Installation
 
-You can install the package via composer:
+The assumption is that you've already set up your Laravel development environment locally using [Sail](https://laravel.com/docs/11.x/sail). 
+
+Once you have your Laravel site running locally, you can install `Sail on Lagoon` via composer:
 
 ```bash
 composer require bomoko/sailinglagoon
 ```
 
-You can publish and run the migrations with:
+To use Sail on Lagoon, run the following Artisan command:
 
 ```bash
-php artisan vendor:publish --tag="sailinglagoon-migrations"
-php artisan migrate
+php artisan sail:onlagoon [--projectName=my-lagoon-project] [--no-interaction]
 ```
 
-You can publish the config file with:
+This will read your sail generated docker-compose.yml file and attempt to generate the required files for a Lagoon installation.
+You can, optionally, specify the name of your project and skip the interactive question.
+Specifying `--no-interaction` will skip any interaction (including warnings) and Lagoonize the project.
 
-```bash
-php artisan vendor:publish --tag="sailinglagoon-config"
-```
+## Supported Services
 
-This is the contents of the published config file:
+Sail-on-Lagoon currently supports the following service types:
 
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="sailinglagoon-views"
-```
-
-## Usage
-
-```php
-$sailinglagoon = new Uselagoon\Sailinglagoon();
-echo $sailinglagoon->echoPhrase('Hello, Uselagoon!');
-```
+    MySQL
+    PostgreSQL
+    MariaDB
+    Redis
+    MeiliSearch
 
 ## Testing
 
