@@ -23,19 +23,17 @@ class SailinglagoonCommand extends Command
         'memcached',
         'meilisearch',
         'typesense',
-        'minio',
-        'mailpit',
+//        'minio', // Minio is local - we ignore it
+//        'mailpit', // Mailpit is local - we ignore it
         'selenium',
         'soketi',
     ];
 
     /** @var string[] $unsupportedServices for development, we'll focus on the service we most use */
     protected $unsupportedServices = [
-        'typesense' => '',
-        'minio' => '',
-        'mailpit' => '',
-        'selenium' => '',
-        'soketi' => '',
+        'typesense' => 'Not yet implemented',
+        'selenium' => 'Selenium on Lagoon requires customization - see Lagoon documentation',
+        'soketi' => 'Soketi is not yet supported',
         'memcached' => 'On Lagoon we encourage the adoption of Redis as a caching backend',
     ];
 
