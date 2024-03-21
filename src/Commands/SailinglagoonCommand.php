@@ -76,6 +76,10 @@ class SailinglagoonCommand extends Command
         // ensure that the user has set their options
         $projectName = $this->option('projectName');
         if(empty($projectName)) {
+            if($this->option("no-interaction") == true) {
+                $this->error("If using 'no-interaction', please ensure you've set a project name using the `--projectName=` option");
+                return 1;
+            }
             $projectName = $this->ask("Please enter a project name", "my-project");
         }
 
@@ -88,7 +92,7 @@ class SailinglagoonCommand extends Command
             foreach ($disallowedServices as $key) {
                 $this->info(sprintf("* %s: %s", $key, $this->unsupportedServices[$key]));
             }
-            if(!$this->confirm("Continue Lagoonizing while ignoring these services?", true)) {
+            if($this->option("no-interaction") == false && !$this->confirm("Continue Lagoonizing while ignoring these services?", true)) {
                 $this->error("Will not continue");
                 return 1;
             }
