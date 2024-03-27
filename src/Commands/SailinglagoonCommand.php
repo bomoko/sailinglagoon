@@ -81,6 +81,7 @@ class SailinglagoonCommand extends Command
             $this->warn("Continuing with this process could cause loss of Lagoon configuration information.");
             if($this->option("no-interaction") == true) {
                 $this->error("If running in no-interaction, please remove .lagoon.yml to continue");
+                return;
             } else {
                 if(!$this->confirm("Continue?")) {
                     return;
@@ -159,7 +160,9 @@ class SailinglagoonCommand extends Command
         $lagoonYml = str_replace(array_keys($replacements), $replacements, $lagoonYml);
 
 
-        file_put_contents(join_paths(base_path(), ".lagoon.yml"), $lagoonYml);
+        if(file_put_contents(join_paths(base_path(), ".lagoon.yml"), $lagoonYml)) {
+            $this->info("Successfully created .lagoon.yml");
+        }
 
         return true;
     }
