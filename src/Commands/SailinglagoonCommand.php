@@ -73,6 +73,24 @@ class SailinglagoonCommand extends Command
             );
         }
 
+        $defaultProjectName = "my-project";
+        // Let's see if there already exists some lagoon.yml
+        $existantInstall = $this->loadExisting(base_path());
+        if($existantInstall != false) {
+            $this->warn("Warning, it seems as though there is already a .lagoon.yml present");
+            $this->warn("Continuing with this process could cause loss of Lagoon configuration information.");
+            if($this->option("no-interaction") == true) {
+                $this->error("If running in no-interaction, please remove .lagoon.yml to continue");
+            } else {
+                if(!$this->confirm("Continue?")) {
+                    return;
+                }
+            }
+            if(!empty($existantInstall['project'])) {
+                $defaultProjectName = $existantInstall['project'];
+            }
+        }
+
         // ensure that the user has set their options
         $projectName = $this->option('projectName');
         if(empty($projectName)) {
@@ -80,7 +98,7 @@ class SailinglagoonCommand extends Command
                 $this->error("If using 'no-interaction', please ensure you've set a project name using the `--projectName=` option");
                 return 1;
             }
-            $projectName = $this->ask("Please enter a project name", "my-project");
+            $projectName = $this->ask("Please enter a project name", $defaultProjectName);
         }
 
         $services = collect(array_keys($parsedCompose['services']))->merge($this->defaultServices);
@@ -169,6 +187,22 @@ class SailinglagoonCommand extends Command
             }
         }
         return $services;
+    }
+
+    /**
+     * Checks for an existing lagoon.yml file and returns a parsed version of it
+     * @param $baseDir
+     * @return false|mixed
+     */
+    public function loadExisting($baseDir) {
+        //search for existing .lagoon.yml file in base
+        $lagoonYmlFile = join_paths($baseDir, ".lagoon.yml");
+        if(file_exists($lagoonYmlFile)) {
+            $currentLagoonYml = file_get_contents($lagoonYmlFile);
+            $parsedCurrentLagoonYml = Yaml::parse($currentLagoonYml);
+            return $parsedCurrentLagoonYml;
+        }
+        return FALSE;
     }
 
     /**
